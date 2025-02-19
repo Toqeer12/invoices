@@ -12,7 +12,7 @@ export const ROOTKEYWORDS = [
 export const JSONLD = {
     "@context": "https://schema.org",
     "@type": "Website",
-    name: "Cheapmarto",
+    name: "Invoify",
     description: "An Invoice Generator Web App",
     keywords: ROOTKEYWORDS,
     url: BASE_URL,
@@ -23,7 +23,7 @@ export const JSONLD = {
     },
     author: {
         "@type": "Person",
-        name: "Hexabyte Dynamic Solutions",
+        name: "Ali Abbasov",
         url: AUTHOR_WEBSITE,
     },
     "@graph": [

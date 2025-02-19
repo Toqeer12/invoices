@@ -49,8 +49,8 @@ export const metadata: Metadata = {
         canonical: BASE_URL,
     },
     authors: {
-        name: "Hexabyte Dynamic Soltuions",
-        url: "https://hexabyteds.com/",
+        name: "Ali Abbasov",
+        url: "https://aliabb.vercel.app",
     },
     verification: {
         google: GOOGLE_SC_VERIFICATION,

@@ -5,13 +5,13 @@ import Link from "next/link";
 import Image from "next/image";
 
 // Assets
-import Logo from "@/public/assets/img/cheapmarto.png";
+import Logo from "@/public/assets/img/invoify-logo.svg";
 
 // ShadCn
 import { Card } from "@/components/ui/card";
 
 // Components
-import { LanguageSelector, ThemeSwitcher } from "@/app/components";
+import { DevDebug, LanguageSelector, ThemeSwitcher } from "@/app/components";
 
 const BaseNavbar = () => {
     const devEnv = useMemo(() => {
@@ -25,14 +25,14 @@ const BaseNavbar = () => {
                     <Link href={"/"}>
                         <Image
                             src={Logo}
-                            alt="Cheapmarto"
+                            alt="Invoify Logo"
                             width={190}
                             height={100}
                             loading="eager"
                         />
                     </Link>
                     {/* ? DEV Only */}
-                    {/* {devEnv && <DevDebug />} */}
+                    {devEnv && <DevDebug />}
                     <LanguageSelector />
                     <ThemeSwitcher />
                 </Card>
