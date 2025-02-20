@@ -12,7 +12,7 @@ import { CHROMIUM_EXECUTABLE_PATH, ENV, TAILWIND_CDN } from "@/lib/variables";
 // Types
 import { InvoiceType } from "@/types";
 
-import edgeChromium from 'chrome-aws-lambda'
+ 
 
 /**
  * Generate a PDF document of an invoice based on the provided data.
@@ -24,13 +24,13 @@ import edgeChromium from 'chrome-aws-lambda'
  */
 
 
-const LOCAL_CHROME_EXECUTABLE = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 
 export async function generatePdfService(req: NextRequest) {
     const body: InvoiceType = await req.json();
 
     // Create a browser instance
     let browser;
+    const executablePath = await chromium.executablePath || "/usr/bin/chromium";
 
     try {
         const ReactDOMServer = (await import("react-dom/server")).default;
@@ -43,15 +43,16 @@ export async function generatePdfService(req: NextRequest) {
         const htmlTemplate = ReactDOMServer.renderToStaticMarkup(
             InvoiceTemplate(body)
         );
-        const executablePath = await chromium.executablePath || "/usr/bin/chromium";
+        // const executablePath = await chromium.executablePath || "/usr/bin/chromium";
 
         // Launch the browser in production or development mode depending on the environment
         if (ENV === "production") {
             const puppeteer = await import("puppeteer-core");
             browser = await puppeteer.launch({
                 args: chromium.args,
-                executablePath: await chromium.executablePath, // Fix: Use chrome-aws-lambda executable
-                headless: chromium.headless, // Fix: Use chrome-aws-lambda headless mode
+                executablePath,
+                headless: chromium.headless,
+                // Fix: Use chrome-aws-lambda headless mode
             });
         
         } else if (ENV === "development") {
