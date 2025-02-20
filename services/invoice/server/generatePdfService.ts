@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // Chromium
-import chromium from "chrome-aws-lambda";
+// import chromium from "chrome-aws-lambda";
+import chromium from "@sparticuz/chromium";
 
 // Helpers
 import { getInvoiceTemplate } from "@/lib/helpers";
@@ -50,9 +51,12 @@ export async function generatePdfService(req: NextRequest) {
             const puppeteer = await import("puppeteer-core");
             browser = await puppeteer.launch({
                 args: chromium.args,
-                executablePath,
-                headless: chromium.headless,
-                // Fix: Use chrome-aws-lambda headless mode
+                defaultViewport: chromium.defaultViewport,
+                executablePath: await chromium.executablePath(
+                    CHROMIUM_EXECUTABLE_PATH
+                ),
+                headless: true,
+                ignoreHTTPSErrors: true,
             });
         
         } else if (ENV === "development") {
