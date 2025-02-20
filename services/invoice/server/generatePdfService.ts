@@ -31,8 +31,8 @@ export async function generatePdfService(req: NextRequest) {
 
     // Create a browser instance
     let browser;
-    const executablePath = await chromium.executablePath || "/usr/bin/chromium";
-
+    // const executablePath = await chromium.executablePath || "/usr/bin/chromium";
+ 
     try {
         const ReactDOMServer = (await import("react-dom/server")).default;
 
@@ -52,9 +52,7 @@ export async function generatePdfService(req: NextRequest) {
             browser = await puppeteer.launch({
                 args: chromium.args,
                 defaultViewport: chromium.defaultViewport,
-                executablePath: await chromium.executablePath(
-                    CHROMIUM_EXECUTABLE_PATH
-                ),
+                executablePath: await chromium.executablePath(),
                 headless: true,
                 ignoreHTTPSErrors: true,
             });

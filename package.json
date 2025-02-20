@@ -35,7 +35,6 @@
         "@types/node": "20.6.2",
         "@vercel/analytics": "^1.1.1",
         "autoprefixer": "10.4.15",
-        "chrome-aws-lambda": "^10.1.0",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.0.0",
         "lucide-react": "^0.279.0",
@@ -45,7 +44,7 @@
         "nodemailer": "^6.9.7",
         "number-to-words": "^1.2.4",
         "postcss": "8.4.31",
-        "puppeteer-core": "^10.4.0",
+        "puppeteer-core": "^21.3.1",
         "react": "18.2.0",
         "react-day-picker": "^8.8.2",
         "react-dom": "18.2.0",
@@ -64,8 +63,8 @@
         "zod": "^3.22.2"
     },
     "devDependencies": {
-        "@sparticuz/chromium": "122.0.0",
         "@next/bundle-analyzer": "^14.0.4",
+        "@sparticuz/chromium": "122.0.0",
         "@types/nodemailer": "^6.4.14",
         "@types/number-to-words": "^1.2.1",
         "@types/react": "^18.2.22",
