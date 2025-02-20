@@ -12,6 +12,8 @@ import { CHROMIUM_EXECUTABLE_PATH, ENV, TAILWIND_CDN } from "@/lib/variables";
 // Types
 import { InvoiceType } from "@/types";
 
+import edgeChromium from 'chrome-aws-lambda'
+
 /**
  * Generate a PDF document of an invoice based on the provided data.
  *
@@ -20,6 +22,10 @@ import { InvoiceType } from "@/types";
  * @throws {Error} If there is an error during the PDF generation process.
  * @returns {Promise<NextResponse>} A promise that resolves to a NextResponse object containing the generated PDF.
  */
+
+
+const LOCAL_CHROME_EXECUTABLE = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+
 export async function generatePdfService(req: NextRequest) {
     const body: InvoiceType = await req.json();
 
@@ -37,43 +43,29 @@ export async function generatePdfService(req: NextRequest) {
         const htmlTemplate = ReactDOMServer.renderToStaticMarkup(
             InvoiceTemplate(body)
         );
+        const executablePath = await edgeChromium.executablePath || LOCAL_CHROME_EXECUTABLE
 
         // Launch the browser in production or development mode depending on the environment
-        // if (ENV === "production") {
-        //     const puppeteer = await import("puppeteer-core");
-        //     browser = await puppeteer.launch({
-        //         args: chromium.args,
-        //         defaultViewport: chromium.defaultViewport,
-        //         executablePath: await chromium.executablePath(
-        //             CHROMIUM_EXECUTABLE_PATH
-        //         ),
-        //         headless: true,
-        //         ignoreHTTPSErrors: true,
-        //     });
-        // } else if (ENV === "development") {
-        //     const puppeteer = await import("puppeteer");
-        //     browser = await puppeteer.launch({
-        //         args: ["--no-sandbox", "--disable-setuid-sandbox"],
-        //         headless: "new",
-        //     });
-        // }
-        const puppeteer = await import("puppeteer");
-        browser = await puppeteer.launch({
-            args: [
-              "--headless",
-              "--no-sandbox",
-              "--disable-setuid-sandbox",
-              "--disable-dev-shm-usage",
-              "--disable-session-crashed-bubble",
-              "--disable-accelerated-2d-canvas",
-              "--no-first-run",
-              "--no-zygote",
-              "--single-process",
-              "--noerrdialogs",
-              "--disable-gpu",
-            ],
-            headless: true,
-        });
+        if (ENV === "production") {
+            const puppeteer = await import("puppeteer-core");
+            browser = await puppeteer.launch({
+                executablePath,
+                args: edgeChromium.args,
+                defaultViewport: chromium.defaultViewport,
+                // await chromium.executablePath(
+                //     CHROMIUM_EXECUTABLE_PATH
+                // ),
+                headless: true,
+                ignoreHTTPSErrors: true,
+            });
+        } else if (ENV === "development") {
+            const puppeteer = await import("puppeteer");
+            browser = await puppeteer.launch({
+                args: ["--no-sandbox", "--disable-setuid-sandbox"],
+                headless: "new",
+            });
+        }
+
         if (!browser) {
             throw new Error("Failed to launch browser");
         }
