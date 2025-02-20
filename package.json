@@ -45,7 +45,6 @@
         "number-to-words": "^1.2.4",
         "postcss": "8.4.31",
         "puppeteer": "^24.2.1",
-        "puppeteer-core": "^24.2.1",
         "react": "18.2.0",
         "react-day-picker": "^8.8.2",
         "react-dom": "18.2.0",
@@ -65,7 +64,6 @@
     },
     "devDependencies": {
         "@next/bundle-analyzer": "^14.0.4",
-        "@sparticuz/chromium": "^122.0.0",
         "@types/nodemailer": "^6.4.14",
         "@types/number-to-words": "^1.2.1",
         "@types/react": "^18.2.22",
