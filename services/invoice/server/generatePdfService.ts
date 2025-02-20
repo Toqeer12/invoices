@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // Chromium
-import chromium from "@sparticuz/chromium";
+import chromium from "chrome-aws-lambda";
 
 // Helpers
 import { getInvoiceTemplate } from "@/lib/helpers";
@@ -43,21 +43,17 @@ export async function generatePdfService(req: NextRequest) {
         const htmlTemplate = ReactDOMServer.renderToStaticMarkup(
             InvoiceTemplate(body)
         );
-        const executablePath = await edgeChromium.executablePath || LOCAL_CHROME_EXECUTABLE
+        const executablePath = await chromium.executablePath || "/usr/bin/chromium";
 
         // Launch the browser in production or development mode depending on the environment
         if (ENV === "production") {
             const puppeteer = await import("puppeteer-core");
             browser = await puppeteer.launch({
-                executablePath,
-                args: edgeChromium.args,
-                defaultViewport: chromium.defaultViewport,
-                // await chromium.executablePath(
-                //     CHROMIUM_EXECUTABLE_PATH
-                // ),
-                headless: true,
-                ignoreHTTPSErrors: true,
+                args: chromium.args,
+                executablePath: await chromium.executablePath, // Fix: Use chrome-aws-lambda executable
+                headless: chromium.headless, // Fix: Use chrome-aws-lambda headless mode
             });
+        
         } else if (ENV === "development") {
             const puppeteer = await import("puppeteer");
             browser = await puppeteer.launch({
