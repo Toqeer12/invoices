@@ -51,9 +51,10 @@ export async function generatePdfService(req: NextRequest) {
             const puppeteer = await import("puppeteer-core");
             browser = await puppeteer.launch({
                 // executablePath,
-                args: chromium.args,
+                args: [...chromium.args, "--no-sandbox", "--disable-setuid-sandbox"],
                 defaultViewport: chromium.defaultViewport,
-                executablePath: "/opt/homebrew/bin/chromium", // Manually specify the path
+                // executablePath: "/opt/homebrew/bin/chromium", // Manually specify the path
+                executablePath: await chromium.executablePath() || "/usr/bin/chromium",
                 headless: true,
                 ignoreHTTPSErrors: true,
             });
