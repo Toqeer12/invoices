@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 // Assets
-import Logo from "@/public/assets/img/invoify-logo.svg";
+import Logo from "@/public/assets/img/cheapmarto.svg";
 
 // ShadCn
 import { Card } from "@/components/ui/card";
@@ -25,7 +25,7 @@ const BaseNavbar = () => {
                     <Link href={"/"}>
                         <Image
                             src={Logo}
-                            alt="Invoify Logo"
+                            alt="Cheapmarto Logo"
                             width={190}
                             height={100}
                             loading="eager"
