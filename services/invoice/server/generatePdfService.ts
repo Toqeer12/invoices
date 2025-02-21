@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // Chromium
-// import chromium from "chrome-aws-lambda";
 import chromium from "@sparticuz/chromium";
 
 // Helpers
@@ -13,7 +12,7 @@ import { CHROMIUM_EXECUTABLE_PATH, ENV, TAILWIND_CDN } from "@/lib/variables";
 // Types
 import { InvoiceType } from "@/types";
 
- 
+// import edgeChromium from 'chrome-aws-lambda'
 
 /**
  * Generate a PDF document of an invoice based on the provided data.
@@ -25,38 +24,39 @@ import { InvoiceType } from "@/types";
  */
 
 
+const LOCAL_CHROME_EXECUTABLE = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 
 export async function generatePdfService(req: NextRequest) {
     const body: InvoiceType = await req.json();
 
     // Create a browser instance
     let browser;
-    // const executablePath = await chromium.executablePath || "/usr/bin/chromium";
- 
+
     try {
         const ReactDOMServer = (await import("react-dom/server")).default;
 
         // Get the selected invoice template
         const templateId = body.details.pdfTemplate;
         const InvoiceTemplate = await getInvoiceTemplate(templateId);
+        console.log("HTML ----->",InvoiceTemplate);
 
         // Read the HTML template from a React component
         const htmlTemplate = ReactDOMServer.renderToStaticMarkup(
             InvoiceTemplate(body)
         );
-        // const executablePath = await chromium.executablePath || "/usr/bin/chromium";
-
+        // const executablePath = await chromium.executablePath || LOCAL_CHROME_EXECUTABLE
+        console.log("HTML ----->",htmlTemplate);
         // Launch the browser in production or development mode depending on the environment
         if (ENV === "production") {
             const puppeteer = await import("puppeteer-core");
             browser = await puppeteer.launch({
+                // executablePath,
                 args: chromium.args,
                 defaultViewport: chromium.defaultViewport,
-                executablePath: await chromium.executablePath(),
+                executablePath: "/opt/homebrew/bin/chromium", // Manually specify the path
                 headless: true,
                 ignoreHTTPSErrors: true,
             });
-        
         } else if (ENV === "development") {
             const puppeteer = await import("puppeteer");
             browser = await puppeteer.launch({
