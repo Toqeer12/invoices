@@ -44,11 +44,16 @@ export async function generatePdfService(req: NextRequest) {
     const htmlTemplate = ReactDOMServer.renderToStaticMarkup(
       InvoiceTemplate(body)
     );
-    // const executablePath = await chromium.executablePath || LOCAL_CHROME_EXECUTABLE
+    // const executablePath = (await chromium.executablePath()) || LOCAL_CHROME_EXECUTABLE;
     // console.log("HTML ----->",htmlTemplate);
+    const isVercel = process.env.VERCEL === "1";
 
     // const executablePath = await chromium.executablePath();
-    // console.log("Chromium Path:", executablePath); // Debugging
+    const executablePath = isVercel
+      ? await chromium.executablePath()
+      : LOCAL_CHROME_EXECUTABLE;
+
+    console.log("Using Chromium at:", executablePath);
 
     // Launch the browser in production or development mode depending on the environment
     // if (ENV === "production") {
@@ -71,12 +76,12 @@ export async function generatePdfService(req: NextRequest) {
     //         ignoreHTTPSErrors: true,
     //     });
     // } else if (ENV === "development") {
-    const puppeteer = await import("puppeteer");
+    const puppeteer = await import("puppeteer-core");
     browser = await puppeteer.launch({
+      defaultViewport: chromium.defaultViewport,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
       headless: "new",
-    //   executablePath:
-    //     "/var/folders/_m/p9nf5l0s23l8m_q5qmg4kdnh0000gn/T/chromium",
+      executablePath: executablePath,
       ignoreHTTPSErrors: true,
     });
     // }
