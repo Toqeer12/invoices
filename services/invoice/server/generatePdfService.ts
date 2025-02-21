@@ -60,8 +60,10 @@ export async function generatePdfService(req: NextRequest) {
         ],
         defaultViewport: chromium.defaultViewport,
         // executablePath: "/opt/homebrew/bin/chromium", // Manually specify the path
-        
-        executablePath: "https://github.com/Sparticuz/chromium/releases/download/v122.0.0/chromium-v122.0.0-pack.tar",
+
+        executablePath: await chromium.executablePath(
+            CHROMIUM_EXECUTABLE_PATH
+        ),
         headless: true,
         ignoreHTTPSErrors: true,
       });
