@@ -50,7 +50,7 @@ export async function generatePdfService(req: NextRequest) {
         const executablePath = await chromium.executablePath();
         console.log("Chromium Path:", executablePath); // Debugging
 
-        
+
         // Launch the browser in production or development mode depending on the environment
         // if (ENV === "production") {
         //     const puppeteer = await import("puppeteer-core");
@@ -76,6 +76,7 @@ export async function generatePdfService(req: NextRequest) {
             browser = await puppeteer.launch({
                 args: ["--no-sandbox", "--disable-setuid-sandbox"],
                 headless: "new",
+                executablePath,
                 ignoreHTTPSErrors: true,
             });
         // }
