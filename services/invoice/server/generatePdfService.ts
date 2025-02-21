@@ -44,16 +44,7 @@ export async function generatePdfService(req: NextRequest) {
     const htmlTemplate = ReactDOMServer.renderToStaticMarkup(
       InvoiceTemplate(body)
     );
-    // const executablePath = (await chromium.executablePath()) || LOCAL_CHROME_EXECUTABLE;
-    // console.log("HTML ----->",htmlTemplate);
-    const isVercel = process.env.VERCEL === "1";
-
-    // const executablePath = await chromium.executablePath();
-    const executablePath = isVercel
-      ? await chromium.executablePath()
-      : LOCAL_CHROME_EXECUTABLE;
-
-    console.log("Using Chromium at:", executablePath);
+  
 
     if (ENV === "production") {
       const puppeteer = await import("puppeteer-core");
