@@ -47,32 +47,33 @@ export async function generatePdfService(req: NextRequest) {
         // const executablePath = await chromium.executablePath || LOCAL_CHROME_EXECUTABLE
         console.log("HTML ----->",htmlTemplate);
         // Launch the browser in production or development mode depending on the environment
-        if (ENV === "production") {
-            const puppeteer = await import("puppeteer-core");
-            browser = await puppeteer.launch({
-                // executablePath,
-                args: [
-                    ...chromium.args,
-                    "--no-sandbox",
-                    "--disable-setuid-sandbox",
-                    "--disable-dev-shm-usage",
-                    "--single-process",
-                    "--disable-gpu",
-                ],
-                defaultViewport: chromium.defaultViewport,
-                // executablePath: "/opt/homebrew/bin/chromium", // Manually specify the path
-                executablePath: await chromium.executablePath() || "/usr/bin/chromium" ||
-                "/opt/bin/chromium",
-                headless: true,
-                ignoreHTTPSErrors: true,
-            });
-        } else if (ENV === "development") {
+        // if (ENV === "production") {
+        //     const puppeteer = await import("puppeteer-core");
+        //     browser = await puppeteer.launch({
+        //         // executablePath,
+        //         args: [
+        //             ...chromium.args,
+        //             "--no-sandbox",
+        //             "--disable-setuid-sandbox",
+        //             "--disable-dev-shm-usage",
+        //             "--single-process",
+        //             "--disable-gpu",
+        //         ],
+        //         defaultViewport: chromium.defaultViewport,
+        //         // executablePath: "/opt/homebrew/bin/chromium", // Manually specify the path
+        //         executablePath: await chromium.executablePath() || "/usr/bin/chromium" ||
+        //         "/opt/bin/chromium",
+        //         headless: true,
+        //         ignoreHTTPSErrors: true,
+        //     });
+        // } else if (ENV === "development") {
             const puppeteer = await import("puppeteer");
             browser = await puppeteer.launch({
                 args: ["--no-sandbox", "--disable-setuid-sandbox"],
                 headless: "new",
+                ignoreHTTPSErrors: true,
             });
-        }
+        // }
 
         if (!browser) {
             throw new Error("Failed to launch browser");
