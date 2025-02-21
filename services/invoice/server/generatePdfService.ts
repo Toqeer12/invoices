@@ -23,121 +23,121 @@ import { InvoiceType } from "@/types";
  * @returns {Promise<NextResponse>} A promise that resolves to a NextResponse object containing the generated PDF.
  */
 
-
-const LOCAL_CHROME_EXECUTABLE = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+const LOCAL_CHROME_EXECUTABLE =
+  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 
 export async function generatePdfService(req: NextRequest) {
-    const body: InvoiceType = await req.json();
+  const body: InvoiceType = await req.json();
 
-    // Create a browser instance
-    let browser;
+  // Create a browser instance
+  let browser;
 
-    try {
-        const ReactDOMServer = (await import("react-dom/server")).default;
+  try {
+    const ReactDOMServer = (await import("react-dom/server")).default;
 
-        // Get the selected invoice template
-        const templateId = body.details.pdfTemplate;
-        const InvoiceTemplate = await getInvoiceTemplate(templateId);
-        console.log("HTML ----->",InvoiceTemplate);
+    // Get the selected invoice template
+    const templateId = body.details.pdfTemplate;
+    const InvoiceTemplate = await getInvoiceTemplate(templateId);
+    console.log("HTML ----->", InvoiceTemplate);
 
-        // Read the HTML template from a React component
-        const htmlTemplate = ReactDOMServer.renderToStaticMarkup(
-            InvoiceTemplate(body)
-        );
-        // const executablePath = await chromium.executablePath || LOCAL_CHROME_EXECUTABLE
-        console.log("HTML ----->",htmlTemplate);
+    // Read the HTML template from a React component
+    const htmlTemplate = ReactDOMServer.renderToStaticMarkup(
+      InvoiceTemplate(body)
+    );
+    // const executablePath = await chromium.executablePath || LOCAL_CHROME_EXECUTABLE
+    // console.log("HTML ----->",htmlTemplate);
 
-        const executablePath = await chromium.executablePath();
-        console.log("Chromium Path:", executablePath); // Debugging
+    // const executablePath = await chromium.executablePath();
+    // console.log("Chromium Path:", executablePath); // Debugging
 
+    // Launch the browser in production or development mode depending on the environment
+    // if (ENV === "production") {
+    //     const puppeteer = await import("puppeteer-core");
+    //     browser = await puppeteer.launch({
+    //         // executablePath,
+    //         args: [
+    //             ...chromium.args,
+    //             "--no-sandbox",
+    //             "--disable-setuid-sandbox",
+    //             "--disable-dev-shm-usage",
+    //             "--single-process",
+    //             "--disable-gpu",
+    //         ],
+    //         defaultViewport: chromium.defaultViewport,
+    //         // executablePath: "/opt/homebrew/bin/chromium", // Manually specify the path
+    //         executablePath: await chromium.executablePath() || "/usr/bin/chromium" ||
+    //         "/opt/bin/chromium",
+    //         headless: true,
+    //         ignoreHTTPSErrors: true,
+    //     });
+    // } else if (ENV === "development") {
+    const puppeteer = await import("puppeteer");
+    browser = await puppeteer.launch({
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      headless: "new",
+    //   executablePath:
+    //     "/var/folders/_m/p9nf5l0s23l8m_q5qmg4kdnh0000gn/T/chromium",
+      ignoreHTTPSErrors: true,
+    });
+    // }
 
-        // Launch the browser in production or development mode depending on the environment
-        // if (ENV === "production") {
-        //     const puppeteer = await import("puppeteer-core");
-        //     browser = await puppeteer.launch({
-        //         // executablePath,
-        //         args: [
-        //             ...chromium.args,
-        //             "--no-sandbox",
-        //             "--disable-setuid-sandbox",
-        //             "--disable-dev-shm-usage",
-        //             "--single-process",
-        //             "--disable-gpu",
-        //         ],
-        //         defaultViewport: chromium.defaultViewport,
-        //         // executablePath: "/opt/homebrew/bin/chromium", // Manually specify the path
-        //         executablePath: await chromium.executablePath() || "/usr/bin/chromium" ||
-        //         "/opt/bin/chromium",
-        //         headless: true,
-        //         ignoreHTTPSErrors: true,
-        //     });
-        // } else if (ENV === "development") {
-            const puppeteer = await import("puppeteer");
-            browser = await puppeteer.launch({
-                args: ["--no-sandbox", "--disable-setuid-sandbox"],
-                headless: "new",
-                executablePath,
-                ignoreHTTPSErrors: true,
-            });
-        // }
-
-        if (!browser) {
-            throw new Error("Failed to launch browser");
-        }
-
-        const page = await browser.newPage();
-        console.log("Page opened"); // Debugging log
-
-        // Set the HTML content of the page
-        await page.setContent(await htmlTemplate, {
-            // * "waitUntil" prop makes fonts work in templates
-            waitUntil: "networkidle0",
-        });
-        console.log("Page content set"); // Debugging log
-
-        // Add Tailwind CSS
-        await page.addStyleTag({
-            url: TAILWIND_CDN,
-        });
-        console.log("Style tag added"); // Debugging log
-
-        // Generate the PDF
-        const pdf: Buffer = await page.pdf({
-            format: "a4",
-            printBackground: true,
-        });
-        console.log("PDF generated"); // Debugging log
-
-        for (const page of await browser.pages()) {
-            await page.close();
-        }
-
-        // Close the Puppeteer browser
-        await browser.close();
-        console.log("Browser closed"); // Debugging log
-
-        // Create a Blob from the PDF data
-        const pdfBlob = new Blob([pdf], { type: "application/pdf" });
-
-        const response = new NextResponse(pdfBlob, {
-            headers: {
-                "Content-Type": "application/pdf",
-                "Content-Disposition": "inline; filename=invoice.pdf",
-            },
-            status: 200,
-        });
-
-        return response;
-    } catch (error) {
-        console.error(error);
-
-        // Return an error response
-        return new NextResponse(`Error generating PDF: \n${error}`, {
-            status: 500,
-        });
-    } finally {
-        if (browser) {
-            await Promise.race([browser.close(), browser.close(), browser.close()]);
-        }
+    if (!browser) {
+      throw new Error("Failed to launch browser");
     }
+
+    const page = await browser.newPage();
+    console.log("Page opened"); // Debugging log
+
+    // Set the HTML content of the page
+    await page.setContent(await htmlTemplate, {
+      // * "waitUntil" prop makes fonts work in templates
+      waitUntil: "networkidle0",
+    });
+    console.log("Page content set"); // Debugging log
+
+    // Add Tailwind CSS
+    await page.addStyleTag({
+      url: TAILWIND_CDN,
+    });
+    console.log("Style tag added"); // Debugging log
+
+    // Generate the PDF
+    const pdf: Buffer = await page.pdf({
+      format: "a4",
+      printBackground: true,
+    });
+    console.log("PDF generated"); // Debugging log
+
+    for (const page of await browser.pages()) {
+      await page.close();
+    }
+
+    // Close the Puppeteer browser
+    await browser.close();
+    console.log("Browser closed"); // Debugging log
+
+    // Create a Blob from the PDF data
+    const pdfBlob = new Blob([pdf], { type: "application/pdf" });
+
+    const response = new NextResponse(pdfBlob, {
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": "inline; filename=invoice.pdf",
+      },
+      status: 200,
+    });
+
+    return response;
+  } catch (error) {
+    console.error(error);
+
+    // Return an error response
+    return new NextResponse(`Error generating PDF: \n${error}`, {
+      status: 500,
+    });
+  } finally {
+    if (browser) {
+      await Promise.race([browser.close(), browser.close(), browser.close()]);
+    }
+  }
 }
