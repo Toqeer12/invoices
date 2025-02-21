@@ -46,6 +46,11 @@ export async function generatePdfService(req: NextRequest) {
         );
         // const executablePath = await chromium.executablePath || LOCAL_CHROME_EXECUTABLE
         console.log("HTML ----->",htmlTemplate);
+
+        const executablePath = await chromium.executablePath();
+        console.log("Chromium Path:", executablePath); // Debugging
+
+        
         // Launch the browser in production or development mode depending on the environment
         // if (ENV === "production") {
         //     const puppeteer = await import("puppeteer-core");
